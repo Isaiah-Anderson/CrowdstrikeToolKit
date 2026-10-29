@@ -1,0 +1,12 @@
+//Line 3 turns every key into a field and converts JSON to Crowdstrike Parsing Standard to be read by the SIEM
+
+parseJson()
+| parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX", field=ts)
+| user.name := user
+| source.ip := src_ip
+| event.category[0] := "authentication"
+| case {
+    result="FAIL" | event.outcome := "failure";
+    result="OK"   | event.outcome := "success";
+    *             | event.outcome := "unknown";
+  }
